@@ -1,3 +1,5 @@
+from turtle import position
+
 from algorithms import utils
 from world.game import Directions, Actions
 from world.station_state import StationState
@@ -234,16 +236,24 @@ class ModuleRepairProblem(SearchProblem):
         """
         Returns True if the robot reached C after picking up M.
         """
-        # TODO: Add your code here
-        utils.raiseNotDefined()
+        position, hasModule = state
+
+        return position == self.controlPosition and hasModule
 
     def _getStepCost(self, nextPosition, hasModule):
         """
         Returns the movement cost for entering nextPosition.
 
         """
-        # TODO: Add your code here
-        utils.raiseNotDefined()
+        baseCost = self.startingMissionState.getTerrainCost(
+        nextPosition[0],
+        nextPosition[1]
+    )
+
+        if hasModule:
+            return 2 * baseCost
+
+        return baseCost
 
     def getSuccessors(self, state):
         """
@@ -268,7 +278,43 @@ class ModuleRepairProblem(SearchProblem):
 
         successors = []
         self._expanded += 1
-        # TODO: Add your code here
+
+        position, hasModule = state
+
+        for direction in [
+            Directions.NORTH,
+            Directions.SOUTH,
+            Directions.EAST,
+            Directions.WEST
+        ]:
+            dx, dy = Actions.directionToVector(direction)
+
+            nextPosition = (
+                position[0] + dx,
+                position[1] + dy
+            )
+
+            if self.walls[nextPosition[0]][nextPosition[1]]:
+                continue
+
+            stepCost = self._getStepCost(
+                nextPosition,
+                hasModule
+            )
+
+            nextHasModule = hasModule
+
+            if nextPosition == self.modulePosition:
+                nextHasModule = True
+
+            nextState = (
+                nextPosition,
+                nextHasModule
+            )
+
+            successors.append(
+                (nextState, direction, stepCost)
+            )
 
         return successors
 
