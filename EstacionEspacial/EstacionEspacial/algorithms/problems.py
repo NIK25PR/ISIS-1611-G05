@@ -233,11 +233,8 @@ class ModuleRepairProblem(SearchProblem):
         return self.start
 
     def isGoalState(self, state):
-        """
-        Returns True if the robot reached C after picking up M.
-        """
+        
         position, hasModule = state
-
         return position == self.controlPosition and hasModule
 
     def _getStepCost(self, nextPosition, hasModule):
