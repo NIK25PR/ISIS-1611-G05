@@ -12,8 +12,15 @@ def normalize(weights: dict) -> dict:
     - Conserve las claves y su orden; no modifique weights.
     - Rechace pesos negativos, no finitos, diccionarios vacíos y suma cero.
     """
-    # TODO: Add your code here
-    raise NotImplementedError("Complete este bloque TODO")
+
+    if not weights:
+        raise ValueError("No hay pesos para normalizar")
+    if any(not math.isfinite(w) or w < 0 for w in weights.values()):
+        raise ValueError("Los pesos deben ser finitos y no negativos")
+    total = sum(weights.values())
+    if total == 0:
+        raise ValueError("La suma de los pesos es cero")
+    return {key: w / total for key, w in weights.items()}
     # FIN DEL BLOQUE DEL ESTUDIANTE
 
 
@@ -37,8 +44,7 @@ def expected_utility(distribution: dict, utilities: dict) -> float:
         raise ValueError("La distribución debe sumar uno")
     if any(not math.isfinite(u) for u in utilities.values()):
         raise ValueError("Utilidades no finitas")
-    # TODO: Add your code here
-    raise NotImplementedError("Complete este bloque TODO")
+    return sum(p * utilities[s] for s, p in distribution.items())
     # FIN DEL BLOQUE DEL ESTUDIANTE
 
 
@@ -56,6 +62,12 @@ def best_action(distribution: dict, actions: dict) -> tuple[str, dict]:
     # Validación de las acciones; no modificar.
     if not actions:
         raise ValueError("Se requiere al menos una acción")
-    # TODO: Add your code here
-    raise NotImplementedError("Complete este bloque TODO")
+
+    values = {action: expected_utility(distribution, table) for action, table in actions.items()}
+    chosen = None
+    for action, value in values.items():
+        # Solo una mejora estricta reemplaza la acción elegida: en empate gana la primera.
+        if chosen is None or value > values[chosen]:
+            chosen = action
+    return chosen, values
     # FIN DEL BLOQUE DEL ESTUDIANTE
